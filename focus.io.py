@@ -7,7 +7,7 @@ from setup import focus
 from shutil import get_terminal_size
 from pam import find
 
-__version__ = "01.00.02"
+__version__ = "01.01.00"
 
 class Task:
 
@@ -88,7 +88,18 @@ def progressbar(sleeping):
     print(" " * (indent - 1), "[", sep="", end="")
 
     for _ in range(bar):
-        sleep(sleeping)
+        try:
+            sleep(sleeping)
+        except KeyboardInterrupt:
+            while True:
+                try:
+                    sleep(1)
+                except KeyboardInterrupt:
+                    break
+            try:
+                sleep(sleeping)
+            except KeyboardInterrupt:
+                exit()
         stdout.write("=")
         stdout.flush()
 
