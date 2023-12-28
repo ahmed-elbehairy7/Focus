@@ -2,12 +2,9 @@ from pyttsx3 import speak
 from time import sleep
 from plyer import notification as nf
 from sys import stdout, exit
-from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+from json import load
 from setup import focus
 from shutil import get_terminal_size
-import csv
 
 __version__ = "00.00.00"
 
@@ -18,11 +15,11 @@ class Task:
 
     tasks = []
 
-    def __init__(self, name, msg, duration):
+    def __init__(self, name : str, duration : int, msg = None):
         self.name = name
         self.duration = duration
         
-        if msg == 0:
+        if not msg:
             self.msg = f"Now is {self.name} time, you will have to do it for {self.duration} minutes"
         else: 
             self.msg = msg
@@ -45,108 +42,81 @@ def main():
 
     speak("Welcome to FOCUS.io, please enter the things you want to do")
 
-    i = 1
-    while True:
-        x = get_details(Task.tasks, i)
-        if x == False:
-            break
-        elif x == "RESTART":
-            Task.tasks = []
-            i = 1
-            continue
-        i += 1
-
-    if i == 1:
-        raise NoTasksDefined("You didnt's input any tasks")
+    get_details()
 
     while True:
         for task in Task.tasks:
 
             terminal, indent, bar = get_terminal_data()
 
-            l = int((terminal - len(task.msg)) / 2)
+            side_space = int((terminal - len(task.msg)) / 2)
             print("\n\n")
-            print(" " * l, task.msg, sep="")
+            print(" " * side_space, task.msg, sep="")
             speak(task.msg)
 
-            progressbar(task.duration)
+            progressbar(task.duration * 60 / 25)
 
         cong = "Congratulations, you had just completed a whole loop!"
         l = int((terminal - len(cong)) / 2)
         print(" " * l, cong, sep="")
         speak(cong)
 
+def get_details():
+    count = 1
+    while True:
+        try:
+           task = input(f"{count}: ")
+        except:
+            exit()
+        match task:
+            case "R" :
+                Task.tasks = []
+                count = 1
+                continue
+            case "":
+                return
+            case _:
+                count += 1
+                pass
+        if not saved(task):
+            Task(task, get_duration())
 
-def get_details(n: int = 1, errormsg: str = "Please enter a valid number"):
-    """A function that gets the details of every thing the user gonna do"""
-    input_ = input(f"{n}: ")
-    if input_ == "":
-        return False
-    if input_ == "R":
-        return "RESTART"
-    x = is_saved(list, input_)
-    if x == 1:
-        print(f"Duration is set as default: {list[n - 1]['time']}")
-        return True
-    else:
-        while True:
-            try:
-                duration = int(input("Duration: "))
-                break
-            except ValueError:
-                print(errormsg)
+        
+def progressbar(sleeping):
 
-    Task(input_, x, duration)
-    return True
-
-
-def progressbar(n):
-    """Deals with the animation bar process"""
-
-    # Print the progress bar
     print(" " * indent, "_" * bar, sep="")
     print(" " * (indent - 1), "[", sep="", end="")
 
-    mins_left = n * 60
     for i in range(bar):
-        mins_left = minisleep(n, mins_left)
+        mins_left = sleep(sleeping)
         stdout.write("=")
         stdout.flush()
 
     print("]\n", " " * indent, "_" * bar, "\n\n", sep="")
+    
 
+def saved(shortcut):
+    with open("saved.json") as file:
+        saved_data = load(file)
+    
+    if shortcut in saved_data:
+        duration = saved_data[shortcut]['duration']
+        print(f"duration is set as defult: {duration}")
+    elif shortcut.lower() in saved_data:
+        duration = get_duration()
+    else:
+        return
+    
+    obj = saved_data[shortcut.lower()]
+    Task(obj['name'], duration, obj['msg'])
+    return True
 
-def minisleep(n, mins):
-    """Wait for the n/bar\n
-    Divides the time by the bar and with every bar percent from the time it ends"""
-
-    for _ in range(int((n * 60) / bar * 100)):
-        sleep(0.01)
-    mins -= mins / bar
-
-    return mins
-
-
-def is_saved(list, x):
-    with open("saved.csv") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if x != row["shortcut"]:
-                if x.lower() == row["shortcut"]:
-                    return row["intromsg"]
-
-            if x == row["shortcut"]:
-                list.append(
-                    {
-                        "name": row["name"],
-                        "msg": row["intromsg"],
-                        "time": row["time_default"],
-                    }
-                )
-                file.close()
-                return 1
-
-    return 0
+def get_duration():
+    while True:
+        try:
+            return float(input("Duration: "))
+        except ValueError:
+            continue
 
 def get_terminal_data():
     terminal: int = int(
