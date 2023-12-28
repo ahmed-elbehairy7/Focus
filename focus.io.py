@@ -1,15 +1,13 @@
 from pyttsx3 import speak
 from time import sleep
-from plyer import notification as nf
+from traceback import print_exc
 from sys import stdout, exit
 from json import load
 from setup import focus
 from shutil import get_terminal_size
+from pam import find
 
-__version__ = "00.00.00"
-
-class NoTasksDefined(Exception):
-    ...
+__version__ = "01.00.02"
 
 class Task:
 
@@ -54,7 +52,7 @@ def main():
             print(" " * side_space, task.msg, sep="")
             speak(task.msg)
 
-            progressbar(task.duration * 60 / 25)
+            progressbar(task.duration * 60 / bar)
 
         cong = "Congratulations, you had just completed a whole loop!"
         l = int((terminal - len(cong)) / 2)
@@ -74,6 +72,8 @@ def get_details():
                 count = 1
                 continue
             case "":
+                if len(Task.tasks) < 1:
+                    exit()
                 return
             case _:
                 count += 1
@@ -87,8 +87,8 @@ def progressbar(sleeping):
     print(" " * indent, "_" * bar, sep="")
     print(" " * (indent - 1), "[", sep="", end="")
 
-    for i in range(bar):
-        mins_left = sleep(sleeping)
+    for _ in range(bar):
+        sleep(sleeping)
         stdout.write("=")
         stdout.flush()
 
@@ -96,7 +96,7 @@ def progressbar(sleeping):
     
 
 def saved(shortcut):
-    with open("saved.json") as file:
+    with open(find("saved.json")) as file:
         saved_data = load(file)
     
     if shortcut in saved_data:
@@ -114,7 +114,7 @@ def saved(shortcut):
 def get_duration():
     while True:
         try:
-            return float(input("Duration: "))
+            return int(input("Duration: "))
         except ValueError:
             continue
 
@@ -127,4 +127,10 @@ def get_terminal_data():
     return terminal, indent, bar
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        exit()
+    except BaseException as e:
+        print_exc()
+        input("Press enter to exit: ")
