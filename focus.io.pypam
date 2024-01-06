@@ -7,7 +7,7 @@ from setup import focus
 from shutil import get_terminal_size
 from pam import find
 
-__version__ = "01.01.00"
+__version__ = "01.01.01"
 
 class Task:
 
@@ -99,7 +99,11 @@ def progressbar(sleeping):
             try:
                 sleep(sleeping)
             except KeyboardInterrupt:
-                exit()
+                try:
+                    sleep(0.8)
+                    sleeping = 0
+                except KeyboardInterrupt:
+                    exit()
         stdout.write("=")
         stdout.flush()
 
