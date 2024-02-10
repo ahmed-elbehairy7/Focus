@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from pyttsx3 import speak
 from time import sleep
 from traceback import print_exc
@@ -149,3 +151,10 @@ if __name__ == "__main__":
     except BaseException as e:
         print_exc()
         input("Press enter to exit: ")
+
+#pam:python
+
+
+#::::pam::::
+#start python focus.io.
+#::::pam::::

@@ -1,3 +1,5 @@
+#!/usr/bin/python3.12
+
 from pyttsx3 import speak
 from time import sleep
 from traceback import print_exc
@@ -23,6 +25,7 @@ class Task:
             self.msg = msg
 
         Task.tasks.append(self)
+        
 
 terminal, indent, bar = None, None, None
 
@@ -32,32 +35,47 @@ mins_left: int = None
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 def main():
+    
+    #Take those global variables to allow editing them for making custom sized progress bar for each task for better visualization
     global mins_left, terminal, indent, bar
 
+    #Get the size of the terminal, progress bar, and the indentation before printing the progress bar
     terminal, indent, bar = get_terminal_data()
-
+	
+    #print an intro for the application
     print(focus)
-
+    
+    #Make the computer say the following
     speak("Welcome to FOCUS.io, please enter the things you want to do")
-
+    
+    #The function that takes the tasks from the user
     get_details()
-
+    
+    #Forever:
     while True:
+	#For each task added by the user
         for task in Task.tasks:
-
+	    
+	    #Get the terminal size, progressbar, indentation again so the program is sure that the progress bar is pretty printed even if the user changed the size of the window
             terminal, indent, bar = get_terminal_data()
-
+	    
+	    #Get the indentation for the message printed for the task so it can be middle aligned
             side_space = int((terminal - len(task.msg)) / 2)
+	    
+	    #Print the message of the task middle aligned and say it loud so the user can hear
             print("\n\n")
             print(" " * side_space, task.msg, sep="")
             speak(task.msg)
-
+	
+	    #The function that track time and print the progress for the task
             progressbar(task.duration * 60 / bar)
-
+	
+	#Congrat the user whenever he finishes a whole set of tasks by pretty printing this message middle aligned and saying it
         cong = "Congratulations, you had just completed a whole loop!"
         l = int((terminal - len(cong)) / 2)
         print(" " * l, cong, sep="")
         speak(cong)
+
 
 def get_details():
     count = 1
