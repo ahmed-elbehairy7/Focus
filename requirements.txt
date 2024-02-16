@@ -1,2 +1,2 @@
 pyttsx3==2.90
-pamylka==0.4.5
+inputimeout==1.0.4

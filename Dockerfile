@@ -1,29 +1,26 @@
-FROM ubuntu
-
-WORKDIR /root
-
+FROM python:3.11-slim as build
+WORKDIR /app
 COPY . .
-
-RUN if ! [[ "16.04 18.04 20.04 22.04" == *"$(lsb_release -rs)"* ]]; \
-then \
-    echo "Ubuntu $(lsb_release -rs) is not currently supported."; \
-    exit;  \
-fi  \
-curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc  &&\
-curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list  &&\
-apt update  &&\
-ACCEPT_EULA=Y apt install -y msodbcsql17  &&\
-# optional: for bcp and sqlcmd
-ACCEPT_EULA=Y apt install -y mssql-tools  &&\
-echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc  &&\
-source ~/.bashrc  &&\
-# optional: for unixODBC development headers
-apt install -y unixodbc-dev
-
-RUN apt update &&\
-apt install -y python3 &&\
-apt install -y python3-pip &&\
-python3-pip install --no-cache-dir -r requirements.txt &&\
-apt remove python3-pip
-
-CMD ["python", "./focus.io.py"]
+RUN set -ex \
+    && apt-get update \
+    && apt-get upgrade -y
+RUN apt install python3 -y
+RUN apt install -y espeak
+RUN apt-get install -y alsa-utils
+RUN apt-get install -y software-properties-common
+RUN apt-get install -y ffmpeg
+RUN apt install python3-pip -y
+RUN apt install espeak -y
+RUN pip install -r requirements.txt
+RUN apt remove python3-pip -y
+RUN chmod +x main.py 
+# Clean up
+RUN set -ex apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+RUN set -ex \
+    # Create a non-root user
+    && addgroup --system --gid 1001 appgroup \
+    && adduser --system --uid 1001 --gid 1001 --no-create-home appuser
+RUN ls
+ENTRYPOINT [ "./main.py" ]
