@@ -12,8 +12,7 @@ from inputimeout import inputimeout, TimeoutOccurred
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 
-SAVED_TASKS = r"D:\\pam\\focus.io\\saved.json"
-DO = r"D:\\pam\\focus.io\\.do"
+SAVED_TASKS = load(open(r"D:\\pam\\focus.io\\saved.json"))
 
 
 def main():
@@ -32,6 +31,10 @@ def main():
     Task.get_tasks("Please enter the one time tasks", True)
     Task.get_tasks("Please enter the looping tasks")
 
+    for task in Task.tasks:
+        task.exec()
+    Task.filter_tasks()
+
     # Forever:
     while True:
         # For each task added by the user
@@ -39,7 +42,6 @@ def main():
             task.exec()
 
         Task.congrats()
-        Task.filter_tasks()
 
 
 class Task:
@@ -70,10 +72,30 @@ class Task:
         speak(self.msg)
 
         # The function that track time and print the progress for the task
-        progressbar(self.duration / bar)  # EDITME
+        progressbar(self.duration * 60 / bar)
 
     def __str__(self) -> str:
         return f"name: {self.name}, duration: {self.duration}, msg: {self.msg}, one time: {self.one_time}"
+
+    @classmethod
+    def new_task(cls, one_time: bool, task_input: str) -> None:
+        if task_input in SAVED_TASKS:
+            Task(
+                SAVED_TASKS[task_input]["name"],
+                get_duration(one_time, task_input),
+                one_time,
+                SAVED_TASKS[task_input]["msg"],
+            )
+        elif task_input.lower() in SAVED_TASKS:
+            Task(
+                SAVED_TASKS[task_input.lower()]["name"],
+                get_duration(one_time, task_input),
+                one_time,
+                SAVED_TASKS[task_input]["msg"],
+            )
+
+        else:
+            Task(task_input, get_duration(), one_time)
 
     @classmethod
     def save(cls):
@@ -94,8 +116,8 @@ class Task:
             )
 
     @classmethod
-    def filter_tasks(cls):
-        cls.tasks = list(filter(lambda x: not x.one_time, cls.tasks))
+    def filter_tasks(cls, one_time: bool = True):
+        cls.tasks = list(filter(lambda x: x.one_time != one_time, cls.tasks))
 
     @classmethod
     def congrats(cls):
@@ -122,18 +144,16 @@ def get_details(one_time: bool):
         task = inputt(f"{count}: ", 5)
         match task:
             case "R":
-                Task.tasks = []
+                Task.filter_tasks(one_time)
                 count = 1
                 continue
             case "":
-                if len(Task.tasks) >= 1:
+                if len(Task.tasks) >= 1 or one_time == True:
                     break
                 continue
             case _:
                 count += 1
-                pass
-        if one_time or not saved(task, one_time):
-            Task(task, get_duration(), one_time)
+                Task.new_task(one_time, task)
 
 
 def progressbar(sleeping):
@@ -141,49 +161,31 @@ def progressbar(sleeping):
     print(" " * (indent - 1), "[", sep="", end="")
 
     for _ in range(bar):
-        with open(DO, "r+") as f:
-            do = f.read()
-            f.truncate(0)
-            match do:
-                case "p":
-                    inputt("", 10)
-                    speak("You are having break for ten minutes now! go back to work")
-                case "P":
-                    inputt("", 30)
-                case "f":
-                    return
-                case _:
-                    sleep(sleeping)
-
+        sleep(sleeping)
         stdout.write("=")
         stdout.flush()
 
     print("]\n", " " * indent, "_" * bar, "\n\n", sep="")
 
 
-def saved(shortcut: str, one_time: bool):
-    with open(SAVED_TASKS) as file:
-        saved_data = load(file)
-
-    if shortcut in saved_data:
-        duration = saved_data[shortcut]["duration"]
-        print(f"duration is set as defult: {duration}")
-    elif shortcut.lower() in saved_data:
+def get_duration(one_time: bool = True, task_input=None):
+    if not task_input:
+        while True:
+            try:
+                return int(inputt("Duration: ", 1))
+            except ValueError:
+                continue
+    
+    try:
+        if not one_time:
+            duration = SAVED_TASKS[task_input]["durations"]["loop"]
+        else:
+                duration = SAVED_TASKS[task_input]["durations"]["one_time"]
+    except KeyError:
+        print("this task does not have a default value duration")
         duration = get_duration()
-    else:
-        return
-
-    obj = saved_data[shortcut.lower()]
-    Task(obj["name"], duration, one_time, obj["msg"])
-    return True
-
-
-def get_duration():
-    while True:
-        try:
-            return int(inputt("Duration: ", 1))
-        except ValueError:
-            continue
+    print(f"duration set to default: {duration}")
+    return duration
 
 
 def get_terminal_data():
@@ -200,11 +202,6 @@ def inputt(prompt: str, n: int = 15) -> None:
         return inputimeout(prompt=prompt, timeout=n * 60)
     except TimeoutOccurred:
         return
-
-
-def edit_file(key: str) -> None:
-    with open(".do", "w") as f:
-        f.write(key)
 
 
 terminal, indent, bar = None, None, None
