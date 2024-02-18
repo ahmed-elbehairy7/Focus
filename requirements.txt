@@ -1,3 +1,4 @@
 pyttsx3==2.90
 inputimeout==1.0.4
 keyboard==0.13.5
+pyinstaller==6.3.0
