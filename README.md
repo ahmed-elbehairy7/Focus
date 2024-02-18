@@ -3,7 +3,7 @@
 This project is a very simple one for productivity and time management. Using the application is pretty easy, and getting started is way easier
 <br>
 
-> \***\*Author's note!!!\*\***: this documentation could be outdated! So, basicly whenever you're stuck, just take a look at the code, I know it's ugly but that's the only way my friend
+> \***\*Author's note!!!\*\***: this documentation could be outdated! So, whenever you're stuck, just take a look at the code, I know it's ugly but that's the only way my friend
 
 ## Get started:
 
@@ -18,6 +18,6 @@ then make sure that the application is working in your device by executing it <c
 
 #### Making an executable:
 
-For making an executable file you can run the following command in the directory where main.py exists <code>pyinstaller -F -n name {path_to_main.py}</code>
+For making an executable file you can run the following command in the directory where main.py exists <code>pyinstaller -F -n focus {path_to_main.py}</code>
 
-#TODO: Complete the documentation
+# TODO: Complete the documentation

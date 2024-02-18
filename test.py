@@ -12,6 +12,7 @@ def test_filter_tasks():
     Task("one time task 2", 28, True)
 
     Task.filter_tasks()
+    Task.filter_tasks()
     for task in Task.tasks:
         print(task)
 

@@ -57,7 +57,7 @@ class Task:
 
         Task.tasks.append(self)
 
-    def exec(self):
+    def exec(self) -> None:
         # Get the terminal size, progressbar, indentation again so the program is sure that the progress bar is pretty printed even if the user changed the size of the window
         terminal, _, bar = get_terminal_data()
 
@@ -70,7 +70,7 @@ class Task:
         speak(self.msg)
 
         # The function that track time and print the progress for the task
-        progressbar(self.duration * 60 / bar)
+        progressbar(self.duration / bar)  # EDITME
 
     def __str__(self) -> str:
         return f"name: {self.name}, duration: {self.duration}, msg: {self.msg}, one time: {self.one_time}"
@@ -95,7 +95,7 @@ class Task:
 
     @classmethod
     def filter_tasks(cls):
-        cls.tasks = filter(lambda x: x.one_time == False, cls.tasks)
+        cls.tasks = list(filter(lambda x: not x.one_time, cls.tasks))
 
     @classmethod
     def congrats(cls):
