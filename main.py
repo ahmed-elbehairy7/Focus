@@ -9,19 +9,13 @@ from shutil import get_terminal_size
 from os import popen
 from inputimeout import inputimeout, TimeoutOccurred
 
-inputt = lambda prompt, n = 15 : inputimeout(prompt=prompt, timeout=n)
-
-
-
-__version__ = "01.02.01"
-
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 
 def main():
     
     #Take those global variables to allow editing them for making custom sized progress bar for each task for better visualization
-    global mins_left, terminal, indent, bar
+    global terminal, indent, bar
 
     #Get the size of the terminal, progress bar, and the indentation before printing the progress bar
     terminal, indent, bar = get_terminal_data()
@@ -32,46 +26,91 @@ def main():
     #Make the computer say the following
     speak("Welcome to FOCUS.io")
     
-    while True:
-        try:
-            msg = "Please enter the things you want to do"
-            print(msg)
-            speak(msg)
-            
-            #The function that takes the tasks from the user
-            get_details()
-            break
-        except TimeoutOccurred:
-            continue
-        
+    Task.get_tasks("Please enter the one time tasks", True)
+    Task.get_tasks("Please enter the looping tasks")
     
     #Forever:
     while True:
 	#For each task added by the user
         for task in Task.tasks:
 	    
-	    #Get the terminal size, progressbar, indentation again so the program is sure that the progress bar is pretty printed even if the user changed the size of the window
-            terminal, indent, bar = get_terminal_data()
-	    
-	    #Get the indentation for the message printed for the task so it can be middle aligned
-            side_space = int((terminal - len(task.msg)) / 2)
-	    
-	    #Print the message of the task middle aligned and say it loud so the user can hear
-            print("\n\n")
-            print(" " * side_space, task.msg, sep="")
-            speak(task.msg)
-	
-	    #The function that track time and print the progress for the task
-            progressbar(task.duration * 60 / bar)
-	
-	#Congrat the user whenever he finishes a whole set of tasks by pretty printing this message middle aligned and saying it
+            task.exec()
+
+        Task.congrats()
+        Task.filter_tasks()
+
+
+
+class Task:
+
+    tasks = []
+
+    def __init__(self, name : str, duration : int, one_time : bool = False, msg = None):
+        self.name = name
+        self.duration = duration
+        self.one_time = one_time
+        
+        if not msg:
+            self.msg = f"Now is {self.name} time, you will have to do it for {self.duration} minutes"
+        else: 
+            self.msg = msg
+
+        Task.tasks.append(self)
+
+    def exec(self):
+        
+        #Get the terminal size, progressbar, indentation again so the program is sure that the progress bar is pretty printed even if the user changed the size of the window
+        terminal, indent, bar = get_terminal_data()
+    
+        #Get the indentation for the message printed for the task so it can be middle aligned
+        side_space = int((terminal - len(self.msg)) / 2)
+    
+        #Print the message of the task middle aligned and say it loud so the user can hear
+        print("\n\n")
+        print(" " * side_space, self.msg, sep="")
+        speak(self.msg)
+
+        #The function that track time and print the progress for the task
+        progressbar(self.duration * 60 / bar)
+       
+    
+    def __str__(self) -> str:
+        return f"name: {self.name}, duration: {self.duration}, msg: {self.msg}, one time: {self.one_time}" 
+    
+    @classmethod
+    def save(cls):
+        with open("tasks.json", "w") as file:
+            dump(list(map(lambda task: {
+                "name": task.name,
+                "duration": task.duration,
+                "msg": task.msg
+            }, cls.tasks)), file, indent=4)
+    
+    @classmethod
+    def filter_tasks(cls):
+        cls.tasks = filter(lambda x : x.one_time == False, cls.tasks)
+        
+    @classmethod
+    def congrats(cls):
+        #Congrat the user whenever he finishes a whole set of tasks by pretty printing this message middle aligned and saying it
         cong = "Congratulations, you had just completed a whole loop!"
         l = int((terminal - len(cong)) / 2)
         print(" " * l, cong, sep="")
         speak(cong)
-
-
-def get_details():
+    
+    @classmethod
+    def get_tasks(cls, msg : str, one_time : bool = False) -> None:
+        while True:
+            print(msg)
+            speak(msg)
+            
+            #The function that takes the tasks from the user
+            get_details(one_time)
+            break
+        
+        
+        
+def get_details(one_time : bool):
     count = 1
     while True:
         task = inputt(f"{count}: ", 600)
@@ -81,14 +120,14 @@ def get_details():
                 count = 1
                 continue
             case "":
-                if len(Task.tasks) > 1:
+                if len(Task.tasks) >= 1:
                     break
                 continue
             case _:
                 count += 1
                 pass
-        if not saved(task):
-            Task(task, get_duration())
+        if not saved(task, one_time):
+            Task(task, get_duration(), one_time)
     
         
 def progressbar(sleeping):
@@ -97,29 +136,25 @@ def progressbar(sleeping):
     print(" " * (indent - 1), "[", sep="", end="")
 
     for _ in range(bar):
-        try:
-            sleep(sleeping)
-        except KeyboardInterrupt:
-            while True:
-                try:
-                    sleep(1)
-                except KeyboardInterrupt:
-                    break
-            try:
-                sleep(sleeping)
-            except KeyboardInterrupt:
-                try:
-                    sleep(0.8)
-                    sleeping = 0
-                except KeyboardInterrupt:
-                    exit()
+        
+        with open(".do", 'r+') as f:
+            do = f.read()
+            f.truncate(0)
+            match do:
+                case "p": 
+                    inputt("", 1)
+                    speak("You are having break for ten minutes now! go back to work")
+                case "P" : inputt("", 30)
+                case "f": return
+                case _: sleep(sleeping)
+      
         stdout.write("=")
         stdout.flush()
 
     print("]\n", " " * indent, "_" * bar, "\n\n", sep="")
     
 
-def saved(shortcut):
+def saved(shortcut : str, one_time : bool):
     with open("saved.json") as file:
         saved_data = load(file)
     
@@ -132,7 +167,7 @@ def saved(shortcut):
         return
     
     obj = saved_data[shortcut.lower()]
-    Task(obj['name'], duration, obj['msg'])
+    Task(obj['name'], duration, one_time, obj['msg'])
     return True
 
 def get_duration():
@@ -149,44 +184,26 @@ def get_terminal_data():
     indent: int = int(terminal / 25)
     bar: int = int((terminal / 25) * 23)
     return terminal, indent, bar
-
-
-class Task:
-
-    tasks = []
-
-    def __init__(self, name : str, duration : int, msg = None):
-        self.name = name
-        self.duration = duration
         
-        if not msg:
-            self.msg = f"Now is {self.name} time, you will have to do it for {self.duration} minutes"
-        else: 
-            self.msg = msg
 
-        Task.tasks.append(self)
-    
-    @classmethod
-    def save(cls):
-        with open("tasks.json", "w") as file:
-            dump(list(map(lambda task: {
-                "name": task.name,
-                "duration": task.duration,
-                "msg": task.msg
-            }, cls.tasks)), file, indent=4)
-        
+def inputt(prompt : str, n : int = 15 ) -> None:
+    try:
+        return inputimeout(prompt=prompt, timeout=n)
+    except TimeoutOccurred:
+        return
+           
+def edit_file(key : str) -> None:
+    with open(".do", "w") as f:
+        f.write(key)
 
 terminal, indent, bar = None, None, None
 
-mins_left: int = None
-
 
 if __name__ == "__main__":
-    while True:
         try:
             main()
-        except SystemExit:
-            continue
+        except (KeyboardInterrupt, SystemExit) as e:
+            exit()
         except BaseException as e:
             print_exc()
             match inputt("Press enter to search, any key to exit: "):
@@ -196,5 +213,3 @@ if __name__ == "__main__":
                 case _:
                     popen(f"search {e}")
                     exit()
-        except KeyboardInterrupt:
-            exit()
