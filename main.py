@@ -13,13 +13,13 @@ from inputimeout import inputimeout, TimeoutOccurred
 # ----------------MAIN FUNCTION------------------#
 
 # Get the saved tasks as a global variable
-terminal, indent, bar, SAVED_TASKS = [None for x in range(4)]
+terminal, indent, bar, SAVED_TASKS = [None for _ in range(4)]
 
 
 def main():
     # Take those global variables to allow editing them for making custom sized progress bar for each task for better visualization
     global terminal, indent, bar
-    
+
     get_saved_tasks()
 
     # Get the size of the terminal, progress bar, and the indentation before printing the progress bar
@@ -34,10 +34,10 @@ def main():
     Task.get_tasks()
 
     for task in Task.tasks:
-        #Do the task logic
+        # Do the task logic
         task.exec()
-    
-    #Remove the one time tasks from tasks
+
+    # Remove the one time tasks from tasks
     Task.filter_tasks()
 
     # Forever:
@@ -57,6 +57,7 @@ class Task:
         self.duration = duration
         self.one_time = one_time
 
+        # If the task doesn't have a message, let it have the default one
         if not msg:
             self.msg = f"Now is {self.name} time, you will have to do it for {self.duration} minutes"
         else:
@@ -66,7 +67,7 @@ class Task:
 
     def exec(self) -> None:
         # Get the terminal size, progressbar, indentation again so the program is sure that the progress bar is pretty printed even if the user changed the size of the window
-        terminal, _, bar = get_terminal_data()
+        get_terminal_data()
 
         # Get the indentation for the message printed for the task so it can be middle aligned
         side_space = int((terminal - len(self.msg)) / 2)
@@ -103,7 +104,7 @@ class Task:
             Task(task_input, get_duration(), one_time)
 
     @classmethod
-    def save(cls):
+    def save(cls) -> None:
         with open("tasks.json", "w") as file:
             dump(
                 list(
@@ -121,11 +122,11 @@ class Task:
             )
 
     @classmethod
-    def filter_tasks(cls, one_time: bool = True):
+    def filter_tasks(cls, one_time: bool = True) -> None:
         cls.tasks = list(filter(lambda x: x.one_time != one_time, cls.tasks))
 
     @classmethod
-    def congrats(cls):
+    def congrats(cls) -> None:
         # Congrat the user whenever he finishes a whole set of tasks by pretty printing this message middle aligned and saying it
         cong = "Congratulations, you had just completed a whole loop!"
         l = int((terminal - len(cong)) / 2)
@@ -135,8 +136,8 @@ class Task:
     @classmethod
     def get_tasks(cls) -> None:
         msgs = {
-            True : "Please enter the one time tasks",
-            False : "Please enter the looping tasks"
+            True: "Please enter the one time tasks",
+            False: "Please enter the looping tasks",
         }
         cls.tasks = []
         one_time = True
@@ -149,12 +150,13 @@ class Task:
                 # The function that takes the tasks from the user
                 one_time = get_details(one_time)
                 if one_time:
-                    map(lambda x : print(x), cls.tasks)
+                    map(lambda x: print(x), cls.tasks)
                     return
             except TimeoutOccurred:
                 continue
 
-def get_details(one_time: bool):
+
+def get_details(one_time: bool) -> bool:
     count = 1
     while True:
         task = inputt(f"{count}: ", 5)
@@ -172,11 +174,11 @@ def get_details(one_time: bool):
             case _:
                 count += 1
                 Task.new_task(one_time, task)
-    
+
     return not one_time
 
 
-def progressbar(sleeping):
+def progressbar(sleeping: int) -> None:
     print(" " * indent, "_" * bar, sep="")
     print(" " * (indent - 1), "[", sep="", end="")
 
@@ -188,21 +190,20 @@ def progressbar(sleeping):
     print("]\n", " " * indent, "_" * bar, "\n\n", sep="")
 
 
-def get_duration(one_time: bool = True, task_input=None):
-    
-    #If the there's no input from the user
+def get_duration(one_time: bool = True, task_input=None) -> int:
+    # If the there's no input from the user
     if not task_input:
         while True:
             try:
                 return int(inputt("Duration: ", 1))
             except ValueError:
                 continue
-    
+
     try:
         if not one_time:
             duration = SAVED_TASKS[task_input]["durations"]["loop"]
         else:
-                duration = SAVED_TASKS[task_input]["durations"]["one_time"]
+            duration = SAVED_TASKS[task_input]["durations"]["one_time"]
     except KeyError:
         print("this task does not have a default value duration")
         duration = get_duration()
@@ -210,28 +211,43 @@ def get_duration(one_time: bool = True, task_input=None):
     return duration
 
 
-def get_terminal_data():
+def get_terminal_data() -> tuple:
+    """The function for pretty printing on terminal"""
+    global terminal, indent, bar
+
+    # Get the terminal size
     terminal: int = int(
         str(get_terminal_size()).replace("os.terminal_size(columns=", "").split(",")[0]
     )
+
+    # Know how much should the progress bar be indented and how many '=' to type
     indent: int = int(terminal / 25)
     bar: int = int((terminal / 25) * 23)
-    return terminal, indent, bar
 
-def get_saved_tasks():
+
+def get_saved_tasks() -> None:
     global SAVED_TASKS
-    
-    #Open the saved.json file and save it in a global variable
+
+    # Open the saved.json file and save it in a global variable
     with open(r"D:\\pam\\focus.io\\saved.json") as file:
         SAVED_TASKS = load(file)
-    
-    #Checking that the user doesn't have any keys as R 
+
+    # Checking that the user doesn't have any keys as R
     keys = [x.lower() for x in SAVED_TASKS.keys()]
-    if 'r' in keys:
+    if "r" in keys:
         raise Exception("You can't have the letter 'R' as a shortcut!!")
-    
-    
+
+
 def inputt(prompt: str, n: int = 15) -> None:
+    """
+    The function for taking an input with some timeout
+
+
+    :param str prompt: the prompt of the input
+    :param int n: the number of minutes to wait timeout
+
+    :rtype: str
+    """
     return inputimeout(prompt=prompt, timeout=n * 60)
 
 

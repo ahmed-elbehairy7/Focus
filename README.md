@@ -60,7 +60,7 @@ so, if you're using pomodoro for studying for example, those will be study for 2
 
 ### reseting tasks
 
-So, you made a typo, or the durations is made wrong, just type uppercase R the next time the app asks you for a task. This also means that you cannot use the letter 'R' as a shortcut, so, you can edit [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L162) to change the letter to reset tasks
+So, you made a typo, or the durations is made wrong, just type uppercase R the next time the app asks you for a task. This also means that you cannot use the letter 'R' as a shortcut, so, you can edit [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L164) to change the letter to reset tasks
 
     match task:
         case "R":
@@ -72,7 +72,7 @@ Keep in mind that the reset will only reset the type of tasks you're currently a
 
 ### deleting all tasks
 
-simply, in order to delete them all, just type uppercase D as a task, and this will do the job, like before this means that you can't have the letter d as a shortcut, but you can change [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L166)
+simply, in order to delete them all, just type uppercase D as a task, and this will do the job, like before this means that you can't have the letter d as a shortcut, but you can change [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L168)
 
     case "D":
         return Task.get_tasks()
@@ -87,7 +87,7 @@ You will notice that the message is differnet from the default one!, also it cal
 
 As you can see, there's two durations, one for looping and the other for one time, you can set one of them or both for each task, but it's not required since the application will handle it and ask you for duration again
 
-If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L225)
+If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L232)
 
     with open(r"D:\\pam\\focus.io\\saved.json") as file:
         SAVED_TASKS = load(file)
