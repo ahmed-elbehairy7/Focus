@@ -26,11 +26,10 @@ Although the application have some bugs, but it's good for reminding you with ta
 
 #### installing the requirements
 
-The only way right now to use the application is to clone the repo, then install the requirements with this command
+The only way right now to use the application is to clone the repo, then install the requirements with this command in the command line.
 
     pip install -r requirements.txt
 
-in the command line.
 <br>
 then make sure that the application is working in your device by executing it <code>python main.py</code>.
 <br>
