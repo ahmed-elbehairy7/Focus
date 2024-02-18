@@ -12,12 +12,15 @@ from inputimeout import inputimeout, TimeoutOccurred
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 
-SAVED_TASKS = load(open(r"D:\\pam\\focus.io\\saved.json"))
+# Get the saved tasks as a global variable
+terminal, indent, bar, SAVED_TASKS = [None for x in range(4)]
 
 
 def main():
     # Take those global variables to allow editing them for making custom sized progress bar for each task for better visualization
     global terminal, indent, bar
+    
+    get_saved_tasks()
 
     # Get the size of the terminal, progress bar, and the indentation before printing the progress bar
     terminal, indent, bar = get_terminal_data()
@@ -28,11 +31,13 @@ def main():
     # Make the computer say the following
     speak("Welcome to FOCUS.io")
 
-    Task.get_tasks("Please enter the one time tasks", True)
-    Task.get_tasks("Please enter the looping tasks")
+    Task.get_tasks()
 
     for task in Task.tasks:
+        #Do the task logic
         task.exec()
+    
+    #Remove the one time tasks from tasks
     Task.filter_tasks()
 
     # Forever:
@@ -89,9 +94,9 @@ class Task:
         elif task_input.lower() in SAVED_TASKS:
             Task(
                 SAVED_TASKS[task_input.lower()]["name"],
-                get_duration(one_time, task_input),
+                get_duration(),
                 one_time,
-                SAVED_TASKS[task_input]["msg"],
+                SAVED_TASKS[task_input.lower()]["msg"],
             )
 
         else:
@@ -128,15 +133,26 @@ class Task:
         speak(cong)
 
     @classmethod
-    def get_tasks(cls, msg: str, one_time: bool = False) -> None:
+    def get_tasks(cls) -> None:
+        msgs = {
+            True : "Please enter the one time tasks",
+            False : "Please enter the looping tasks"
+        }
+        cls.tasks = []
+        one_time = True
         while True:
+            msg = msgs[one_time]
             print(msg)
             speak(msg)
 
-            # The function that takes the tasks from the user
-            get_details(one_time)
-            break
-
+            try:
+                # The function that takes the tasks from the user
+                one_time = get_details(one_time)
+                if one_time:
+                    map(lambda x : print(x), cls.tasks)
+                    return
+            except TimeoutOccurred:
+                continue
 
 def get_details(one_time: bool):
     count = 1
@@ -147,13 +163,17 @@ def get_details(one_time: bool):
                 Task.filter_tasks(one_time)
                 count = 1
                 continue
+            case "D":
+                return Task.get_tasks()
             case "":
-                if len(Task.tasks) >= 1 or one_time == True:
+                if len(Task.tasks) >= 1 or one_time:
                     break
                 continue
             case _:
                 count += 1
                 Task.new_task(one_time, task)
+    
+    return not one_time
 
 
 def progressbar(sleeping):
@@ -169,6 +189,8 @@ def progressbar(sleeping):
 
 
 def get_duration(one_time: bool = True, task_input=None):
+    
+    #If the there's no input from the user
     if not task_input:
         while True:
             try:
@@ -196,15 +218,21 @@ def get_terminal_data():
     bar: int = int((terminal / 25) * 23)
     return terminal, indent, bar
 
-
+def get_saved_tasks():
+    global SAVED_TASKS
+    
+    #Open the saved.json file and save it in a global variable
+    with open(r"D:\\pam\\focus.io\\saved.json") as file:
+        SAVED_TASKS = load(file)
+    
+    #Checking that the user doesn't have any keys as R 
+    keys = [x.lower() for x in SAVED_TASKS.keys()]
+    if 'r' in keys:
+        raise Exception("You can't have the letter 'R' as a shortcut!!")
+    
+    
 def inputt(prompt: str, n: int = 15) -> None:
-    try:
-        return inputimeout(prompt=prompt, timeout=n * 60)
-    except TimeoutOccurred:
-        return
-
-
-terminal, indent, bar = None, None, None
+    return inputimeout(prompt=prompt, timeout=n * 60)
 
 
 if __name__ == "__main__":

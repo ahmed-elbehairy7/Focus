@@ -4,10 +4,6 @@ This project is a very simple one for productivity and time management. Using th
 
 Although the application have some bugs, but it's good for reminding you with tasks since it literaly talks to you, also for getting most of it, you should add the application to your startup, so when it sees that you didn't enter tasks, it tell you so you're not on auto pilot
 
-<br>
-
-> **Author's note!!!:** this documentation could be outdated! So, whenever you're stuck, just take a look at the code, I know it's ugly but that's the only way!
-
 ## Table of contents:
 
 - [Getting started](#getting-started)
@@ -17,6 +13,8 @@ Although the application have some bugs, but it's good for reminding you with ta
   - [After running the application](#after-running-the-application)
     - [one time tasks](#one-time-tasks)
     - [looping tasks](#looping-tasks)
+    - [reseting tasks](#reseting-tasks)
+    - [deleting all tasks](#deleting-all-tasks)
 - [saved.json](#savedjson)
 - [At the end](#at-the-end)
 
@@ -61,6 +59,25 @@ So, basicly here, the program will ask you for your one time tasks, which are ta
 
 so, if you're using pomodoro for studying for example, those will be study for 25 minutes, and break for 5, after typng the name then the duration for every one, hit enter again and it will start with the one time tasks, then loop over the looping tasks
 
+### reseting tasks
+
+So, you made a typo, or the durations is made wrong, just type uppercase R the next time the app asks you for a task. This also means that you cannot use the letter 'R' as a shortcut, so, you can edit [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L162) to change the letter to reset tasks
+
+    match task:
+        case "R":
+        Task.filter_tasks(one_time)
+        count = 1
+        continue
+
+Keep in mind that the reset will only reset the type of tasks you're currently at, to reset all tasks see the following section
+
+### deleting all tasks
+
+simply, in order to delete them all, just type uppercase D as a task, and this will do the job, like before this means that you can't have the letter d as a shortcut, but you can change [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L166)
+
+    case "D":
+        return Task.get_tasks()
+
 ## saved.json:
 
 Next, you should take a look at the saved.json file, this is the file where you save your common tasks, like daily ones, instead of typing study, duration: 25 every day, you can add a shortuct so for example, when you type s, the program should know that you want to study for 25 minutes, but if you want to study for 15 minutes this day, just enter the s uppercase!
@@ -71,9 +88,10 @@ You will notice that the message is differnet from the default one!, also it cal
 
 As you can see, there's two durations, one for looping and the other for one time, you can set one of them or both for each task, but it's not required since the application will handle it and ask you for duration again
 
-If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L15)
+If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L225)
 
-    SAVED_TASKS = load(open(r"D:\\pam\\focus.io\\saved.json"))
+    with open(r"D:\\pam\\focus.io\\saved.json") as file:
+        SAVED_TASKS = load(file)
 
 Also: in case you messed up the file, here's the original format to start with:
 <code>
