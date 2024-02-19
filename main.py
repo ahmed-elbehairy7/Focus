@@ -22,9 +22,6 @@ def main():
 
     get_saved_tasks()
 
-    # Get the size of the terminal, progress bar, and the indentation before printing the progress bar
-    terminal, indent, bar = get_terminal_data()
-
     # print an intro for the application
     # print(focus)
 
@@ -159,7 +156,7 @@ class Task:
 def get_details(one_time: bool) -> bool:
     count = 1
     while True:
-        task = inputt(f"{count}: ", 5)
+        task = inputt(f"{count}: ", 1)
         match task:
             case "R":
                 Task.filter_tasks(one_time)
@@ -216,13 +213,13 @@ def get_terminal_data() -> tuple:
     global terminal, indent, bar
 
     # Get the terminal size
-    terminal: int = int(
+    terminal = int(
         str(get_terminal_size()).replace("os.terminal_size(columns=", "").split(",")[0]
     )
 
     # Know how much should the progress bar be indented and how many '=' to type
-    indent: int = int(terminal / 25)
-    bar: int = int((terminal / 25) * 23)
+    indent = int(terminal / 25)
+    bar = int((terminal / 25) * 23)
 
 
 def get_saved_tasks() -> None:
