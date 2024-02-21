@@ -163,7 +163,8 @@ def get_details(one_time: bool) -> bool:
                 count = 1
                 continue
             case "D":
-                return Task.get_tasks()
+                Task.get_tasks()
+                return True
             case "":
                 if len(Task.tasks) >= 1 or one_time:
                     break
