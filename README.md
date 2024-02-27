@@ -28,9 +28,9 @@ The only way right now to use the application is to clone the repo, then install
 
     pip install -r requirements.txt
 
-<br>
-then make sure that the application is working in your device by executing it <code>python main.py</hel>.
-<br>
+<br />
+then make sure that the application is working in your device by executing it <code>python main.py</code>.
+<br />
 
 #### Making an executable
 
@@ -40,14 +40,14 @@ For making an executable file you can run the following command in the directory
 
 > **_NOTE:_** Probably when you try making an executable file, windows will tell you that this is a virus! this is probably becuase the app communicate with some files. Trust me, I'm not trying to hack you by giving you code you can read, but also you should see the code first whenever you want to update it, it's just 200 lines of code!
 
-<br>
+<br />
 
 ### After running the application
 
 #### One time tasks
 
 So, basicly here, the program will ask you for your one time tasks, which are tasks you will do once at the beginning then start studying with your pomodoro timer for example. The program will ask you for them one by one, and when you finish just hit enter
-<br>
+<br />
 
 **You have to tell the application:**
 

@@ -164,7 +164,7 @@ class Task:
 def get_details(one_time: bool) -> bool:
     global DELETE_ALL, RESET_TYPE
     while True:
-        task = inputt(f"{len(Task.filtered_tasks(not one_time)) + 1} >>> ", 1)
+        task = inputt(f"{len(Task.filtered_tasks(not one_time)) + 1}: ", 1)
         if task == RESET_TYPE:
             Task.filter_tasks(one_time)
             continue
@@ -234,7 +234,7 @@ def get_saved_tasks() -> None:
     global SAVED_TASKS
 
     # Open the saved.json file and save it in a global variable
-    with open() as file:
+    with open(SAVED_TASKS_PATHS) as file:
         SAVED_TASKS = load(file)
 
     # Checking that the user doesn't have any keys as R
