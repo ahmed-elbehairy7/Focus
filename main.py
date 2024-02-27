@@ -12,6 +12,10 @@ from inputimeout import inputimeout, TimeoutOccurred
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 
+DELETE_ALL = "D"
+RESET_TYPE = "R"
+SAVED_TASKS_PATHS = r"D:\\pam\\focus.io\\saved.json"
+
 # Get the saved tasks as a global variable
 terminal, indent, bar, SAVED_TASKS = [None for _ in range(4)]
 
@@ -120,7 +124,11 @@ class Task:
 
     @classmethod
     def filter_tasks(cls, one_time: bool = True) -> None:
-        cls.tasks = list(filter(lambda x: x.one_time != one_time, cls.tasks))
+        cls.tasks = cls.filtered_tasks(one_time)
+    
+    @classmethod
+    def filtered_tasks(cls, one_time: bool = True) -> None:
+        return list(filter(lambda x: x.one_time != one_time, cls.tasks))
 
     @classmethod
     def congrats(cls) -> None:
@@ -154,27 +162,23 @@ class Task:
 
 
 def get_details(one_time: bool) -> bool:
-    count = 1
+    global DELETE_ALL, RESET_TYPE
     while True:
-        task = inputt(f"{count}: ", 1)
-        match task:
-            case "R":
-                Task.filter_tasks(one_time)
-                count = 1
-                continue
-            case "D":
-                Task.get_tasks()
-                return True
-            case "":
-                if len(Task.tasks) >= 1 or one_time:
-                    break
-                continue
-            case _:
-                count += 1
-                Task.new_task(one_time, task)
+        task = inputt(f"{len(Task.filtered_tasks(not one_time)) + 1} >>> ", 1)
+        if task == RESET_TYPE:
+            Task.filter_tasks(one_time)
+            continue
+        elif task == DELETE_ALL:
+            Task.get_tasks()
+            return True
+        elif task == "":
+            if len(Task.tasks) >= 1 or one_time:
+                break
+            continue
+        else:
+            Task.new_task(one_time, task)
 
     return not one_time
-
 
 def progressbar(sleeping: int) -> None:
     print(" " * indent, "_" * bar, sep="")
@@ -193,7 +197,10 @@ def get_duration(one_time: bool = True, task_input=None) -> int:
     if not task_input:
         while True:
             try:
-                return int(inputt("Duration: ", 1))
+                value = int(inputt("Duration: ", 1))
+                if value <= 0:
+                    continue
+                return value
             except ValueError:
                 continue
 
@@ -227,7 +234,7 @@ def get_saved_tasks() -> None:
     global SAVED_TASKS
 
     # Open the saved.json file and save it in a global variable
-    with open(r"D:\\pam\\focus.io\\saved.json") as file:
+    with open() as file:
         SAVED_TASKS = load(file)
 
     # Checking that the user doesn't have any keys as R

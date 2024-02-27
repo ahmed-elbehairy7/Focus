@@ -4,7 +4,7 @@ This project is a very simple one for productivity and time management. Using th
 
 Although the application have some bugs, but it's good for reminding you with tasks since it literaly talks to you, also for getting most of it, you should add the application to your startup, so when it sees that you didn't enter tasks, it tell you so you're not on auto pilot
 
-## Table of contents:
+## Table of contents
 
 - [Getting started](#getting-started)
   - [setup](#setup)
@@ -18,7 +18,7 @@ Although the application have some bugs, but it's good for reminding you with ta
 - [saved.json](#savedjson)
 - [At the end](#at-the-end)
 
-## Getting started:
+## Getting started
 
 ### setup
 
@@ -29,10 +29,10 @@ The only way right now to use the application is to clone the repo, then install
     pip install -r requirements.txt
 
 <br>
-then make sure that the application is working in your device by executing it <code>python main.py</code>.
+then make sure that the application is working in your device by executing it <code>python main.py</hel>.
 <br>
 
-#### Making an executable:
+#### Making an executable
 
 For making an executable file you can run the following command in the directory where main.py exists
 
@@ -42,7 +42,7 @@ For making an executable file you can run the following command in the directory
 
 <br>
 
-### After running the application:
+### After running the application
 
 #### One time tasks
 
@@ -60,24 +60,19 @@ so, if you're using pomodoro for studying for example, those will be study for 2
 
 ### reseting tasks
 
-So, you made a typo, or the durations is made wrong, just type uppercase R the next time the app asks you for a task. This also means that you cannot use the letter 'R' as a shortcut, so, you can edit [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L164) to change the letter to reset tasks
+So, you made a typo, or the durations is made wrong, just type uppercase R the next time the app asks you for a task. This also means that you cannot use the letter 'R' as a shortcut, so, you can edit [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L16) to change the letter to reset tasks
 
-    match task:
-        case "R":
-        Task.filter_tasks(one_time)
-        count = 1
-        continue
+    RESET_TYPE = "R"
 
 Keep in mind that the reset will only reset the type of tasks you're currently at, to reset all tasks see the following section
 
 ### deleting all tasks
 
-simply, in order to delete them all, just type uppercase D as a task, and this will do the job, like before this means that you can't have the letter d as a shortcut, but you can change [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L168)
+simply, in order to delete them all, just type uppercase D as a task, and this will do the job, like before this means that you can't have the letter d as a shortcut, but you can change [this line of code](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#15)
 
-    case "D":
-        return Task.get_tasks()
+    DELETE_ALL = "D"
 
-## saved.json:
+## saved.json
 
 Next, you should take a look at the saved.json file, this is the file where you save your common tasks, like daily ones, instead of typing study, duration: 25 every day, you can add a shortuct so for example, when you type s, the program should know that you want to study for 25 minutes, but if you want to study for 15 minutes this day, just enter the s uppercase!
 
@@ -87,38 +82,13 @@ You will notice that the message is differnet from the default one!, also it cal
 
 As you can see, there's two durations, one for looping and the other for one time, you can set one of them or both for each task, but it's not required since the application will handle it and ask you for duration again
 
-If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L232)
+If you want to edit the path for the saved.json, edit [this line in code:](https://github.com/ahmed-elbehairy7/Focus/blob/bad46936ca599ac9c3bbe98ad4185da2d4abf8f4/main.py#L17)
 
-    with open(r"D:\\pam\\focus.io\\saved.json") as file:
-        SAVED_TASKS = load(file)
+    SAVED_TASKS_PATHS = r"D:\\pam\\focus.io\\saved.json"
 
-Also: in case you messed up the file, here's the original format to start with:
-<code>
+## At the end
 
-    {
-        "q" : {
-            "name" : "Quran Recitation",
-            "msg" : "Hey! Behairy, Do you hear me? I hope you're with me on the line! it's time for quran! you have to get up now and do it. Hey Ahmad! leave everything in your hand right now. it's time for Quran recitation.",
-            "durations" :{
-                "loop" : 15,
-                "one_time" : 40
-            }
-        },
-        "w" : {
-            "name" : "Work",
-            "msg" : "Hey, Ahmed! it's time to do some work!",
-            "durations" :{
-                "loop" : 15,
-                "one_time" : 40
-            }
-        }
-    }
-
-</code>
-
-## At the end:
-
-planning for those as **comming soons:**
+**comming soon إن شاء الله:**
 
 - track applications opened on the pc and yell at the user if he's procrastinating
 - open automaticly the applications you use for tasks or setup the environment for you by running some sort of script
