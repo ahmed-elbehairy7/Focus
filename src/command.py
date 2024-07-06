@@ -40,7 +40,7 @@ class Command:
 
     def send(self):
         title: str = getActiveWindowTitle()
-        if "focus.exe" in title or "focus.io" in title:
+        if "focus.exe" in title:
             Command.queue.put(self.letter)
 
     def __str__(self) -> str:
