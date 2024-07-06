@@ -3,12 +3,10 @@
 from pyttsx3 import speak
 from traceback import print_exc
 from sys import  exit
-from threading import Thread
 from todos import Todo
 from tasks import Task
 from globals import *
 from argparse import ArgumentParser
-from keyboard import on_press_key
 
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
@@ -28,9 +26,6 @@ def main():
     speak("Welcome to FOCUS.io")
     
     Task.get_tasks(speak)
-    
-    on_press_key('p', lambda _: Task.queue.put('p'))
-    on_press_key('r', lambda _: Task.queue.put('r'))
 
     for task in Task.filtered_tasks(False):
         # Do the task logic

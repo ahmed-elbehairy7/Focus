@@ -6,6 +6,8 @@ from inputimeout import TimeoutOccurred
 from colorama import Fore, Style, Back
 from globals import *
 from queue import Queue, Empty
+from keyboard import on_press_key
+from pygetwindow import getActiveWindowTitle
 
 class Task:
     tasks = []
@@ -152,6 +154,9 @@ class Task:
 
     @classmethod
     def get_tasks(cls, speak) -> None:
+        on_press_key('p', lambda _: cls.put_letter('p'))
+        on_press_key('r', lambda _: cls.put_letter('r'))
+    
         msgs = {
             True: "Please enter the one time tasks",
             False: "Please enter the looping tasks",
@@ -217,6 +222,11 @@ class Task:
         print(f"duration set to default: {duration}")
         return duration
 
+    @classmethod
+    def put_letter(cls, l : str):
+        title : str = getActiveWindowTitle()    
+        if title.endswith("focus.exe") or "focus.io" in title:
+            cls.queue.put(l)
 
 def get_terminal_data() -> tuple:
     """The function for pretty printing on terminal"""
@@ -230,4 +240,4 @@ def get_terminal_data() -> tuple:
     # Know how much should the progress bar be indented and how many '=' to type
     indent = int(terminal / 25)
     bar = int((terminal / 25) * 23)
-
+    
