@@ -2,12 +2,13 @@
 
 from pyttsx3 import speak
 from traceback import print_exc
-from sys import stdout, exit
-from os import popen
+from sys import  exit
+from threading import Thread
 from todos import Todo
 from tasks import Task
 from globals import *
 from argparse import ArgumentParser
+from keyboard import on_press_key
 
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
@@ -23,15 +24,13 @@ if args.quite:
 
 def main():
 
-    # print an intro for the application
-    # print(focus)
-
     # Make the computer say the following
     speak("Welcome to FOCUS.io")
     
-    # Todo.getTodos(speak)
-
     Task.get_tasks(speak)
+    
+    on_press_key('p', lambda _: Task.queue.put('p'))
+    on_press_key('r', lambda _: Task.queue.put('r'))
 
     for task in Task.filtered_tasks(False):
         # Do the task logic
@@ -49,8 +48,7 @@ def main():
         for task in Task.tasks:
             task.exec(speak)
 
-        Task.congrats(speak)               
-
+        Task.congrats(speak)                   
 
 if __name__ == "__main__":
     try:

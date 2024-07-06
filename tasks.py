@@ -5,10 +5,13 @@ from shutil import get_terminal_size
 from inputimeout import TimeoutOccurred
 from colorama import Fore, Style, Back
 from globals import *
+from queue import Queue, Empty
 
 class Task:
     tasks = []
     SAVED = SAVED['tasks']
+    queue = Queue()
+    t = None
 
     def __init__(self, name: str, duration: int, one_time: bool = False, msg=None):
         self.index = len(Task.tasks)
@@ -51,7 +54,19 @@ class Task:
         print('\n\n', " " * (indent - 1), "|", sep="", end="")
 
         for _ in range(bar):
-            sleep(sleeping)
+            try:
+                t = Task.queue.get(True, sleeping)
+                match t:
+                    case 'p':
+                        while True:
+                            t = Task.queue.get()
+                            if t == 'r':
+                                sleep(sleeping)
+                                break
+                    case _:
+                        sleep(sleeping)
+            except Empty:
+                pass
             print(Back.LIGHTWHITE_EX, end='')
             stdout.write(" ")
             stdout.flush()
