@@ -6,17 +6,18 @@ Although the application have some bugs, but it's good for reminding you with ta
 
 ## Table of contents
 
-- [Getting started](#getting-started)
-  - [setup](#setup)
-    - [installing the requirements](#installing-the-requirements)
-    - [Making an executable](#making-an-executable)
-  - [After running the application](#after-running-the-application)
-    - [one time tasks](#one-time-tasks)
-    - [looping tasks](#looping-tasks)
-    - [reseting tasks](#reseting-tasks)
-    - [deleting all tasks](#deleting-all-tasks)
-- [saved.json](#savedjson)
-- [At the end](#at-the-end)
+-   [Getting started](#getting-started)
+    -   [setup](#setup)
+        -   [installing the requirements](#installing-the-requirements)
+        -   [Making an executable](#making-an-executable)
+    -   [After running the application](#after-running-the-application)
+        -   [one time tasks](#one-time-tasks)
+        -   [looping tasks](#looping-tasks)
+        -   [reseting tasks](#reseting-tasks)
+        -   [deleting all tasks](#deleting-all-tasks)
+        -   [available commands](#available-commands)
+-   [saved.json](#savedjson)
+-   [At the end](#at-the-end)
 
 ## Getting started
 
@@ -51,8 +52,8 @@ So, basicly here, the program will ask you for your one time tasks, which are ta
 
 **You have to tell the application:**
 
-- task name
-- task duration
+-   task name
+-   task duration
 
 #### looping tasks
 
@@ -72,6 +73,15 @@ simply, in order to delete them all, just type uppercase D as a task, and this w
 
     DELETE_ALL = "D"
 
+### available commands
+
+till now, the application has four basic commands while executing tasks, triggered on specific key presses and they're:
+
+-   p -> pause task progress
+-   r -> resume task progress
+-   s -> skip current task
+-   e -> exit whole program
+
 ## saved.json
 
 Next, you should take a look at the saved.json file, this is the file where you save your common tasks, like daily ones, instead of typing study, duration: 25 every day, you can add a shortuct so for example, when you type s, the program should know that you want to study for 25 minutes, but if you want to study for 15 minutes this day, just enter the s uppercase!
@@ -90,7 +100,7 @@ If you want to edit the path for the saved.json, edit [this line in code:](https
 
 **comming soon إن شاء الله:**
 
-- track applications opened on the pc and yell at the user if he's procrastinating
-- open automaticly the applications you use for tasks or setup the environment for you by running some sort of script
-- Plays quran at tasks defined that can afford that
-- Pausing, skipping tasks...etc. (this existed for a while probably you can find it in older versions, but I wanted to improve it then i messed everything and I'm too lazy to get it back)
+-   track applications opened on the pc and yell at the user if he's procrastinating
+-   open automaticly the applications you use for tasks or setup the environment for you by running some sort of script
+-   Plays quran at tasks defined that can afford that
+-   Pausing, skipping tasks...etc. (this existed for a while probably you can find it in older versions, but I wanted to improve it then i messed everything and I'm too lazy to get it back)
