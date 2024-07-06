@@ -23,6 +23,12 @@ Although the application have some bugs, but it's good for reminding you with ta
 
 ### setup
 
+#### Installing
+
+You can simply clone the repo stable production branch by the following command
+
+    git clone -b prod https://github.com/ahmed-elbehairy7/Focus
+
 #### installing the requirements
 
 The only way right now to use the application is to clone the repo, then install the requirements with this command in the command line.
