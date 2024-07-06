@@ -27,7 +27,7 @@ Although the application have some bugs, but it's good for reminding you with ta
 
 You can simply clone the repo stable production branch by the following command
 
-    git clone -b prod https://github.com/ahmed-elbehairy7/Focus
+    git clone https://github.com/ahmed-elbehairy7/Focus
 
 #### installing the requirements
 
@@ -43,7 +43,7 @@ then make sure that the application is working in your device by executing it <c
 
 For making an executable file you can run the following command in the directory where main.py exists
 
-    pyinstaller -F -n focus main.py
+    ./build.bat
 
 > **_NOTE:_** Probably when you try making an executable file, windows will tell you that this is a virus! this is probably becuase the app communicate with some files. Trust me, I'm not trying to hack you by giving you code you can read, but also you should see the code first whenever you want to update it, it's just 200 lines of code!
 
@@ -109,4 +109,3 @@ If you want to edit the path for the saved.json, edit [this line in code:](https
 -   track applications opened on the pc and yell at the user if he's procrastinating
 -   open automaticly the applications you use for tasks or setup the environment for you by running some sort of script
 -   Plays quran at tasks defined that can afford that
--   Pausing, skipping tasks...etc. (this existed for a while probably you can find it in older versions, but I wanted to improve it then i messed everything and I'm too lazy to get it back)
