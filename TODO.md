@@ -6,4 +6,3 @@
 -   have the ability to know what's opened and yell at you if you're procrastinating
 -   the ability to play some quran while doing some tasks
 -   open automaticly the applications you use for tasks or setup the environment for you by running some sort of script
--   Pausing, skipping tasks...etc.

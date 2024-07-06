@@ -5,15 +5,12 @@ from shutil import get_terminal_size
 from inputimeout import TimeoutOccurred
 from colorama import Fore, Style, Back
 from globals import *
-from queue import Queue, Empty
-from keyboard import on_press_key
-from pygetwindow import getActiveWindowTitle
+from queue import Empty
+from command import Command
 
 class Task:
     tasks = []
     SAVED = SAVED['tasks']
-    queue = Queue()
-    t = None
 
     def __init__(self, name: str, duration: int, one_time: bool = False, msg=None):
         self.index = len(Task.tasks)
@@ -41,6 +38,9 @@ class Task:
         
         Task.print_tasks(self.index)
         
+        Command.print_help()
+        print("\n\n")
+        
         #msg
         print(" " * side_space, self.msg, sep="")
         speak(self.msg)
@@ -57,14 +57,18 @@ class Task:
 
         for _ in range(bar):
             try:
-                t = Task.queue.get(True, sleeping)
+                t = Command.queue.get(True, sleeping)
                 match t:
                     case 'p':
                         while True:
-                            t = Task.queue.get()
+                            t = Command.queue.get()
                             if t == 'r':
                                 sleep(sleeping)
                                 break
+                    case 's':
+                        return
+                    case 'e':
+                        raise SystemExit
                     case _:
                         sleep(sleeping)
             except Empty:
@@ -96,7 +100,7 @@ class Task:
                 continue
             print(name)
             
-        print(Style.RESET_ALL + '\n\n')
+        print(Style.RESET_ALL + '\n')
 
     @classmethod
     def new_task(cls, one_time: bool, task_input: str) -> None:
@@ -154,8 +158,6 @@ class Task:
 
     @classmethod
     def get_tasks(cls, speak) -> None:
-        on_press_key('p', lambda _: cls.put_letter('p'))
-        on_press_key('r', lambda _: cls.put_letter('r'))
     
         msgs = {
             True: "Please enter the one time tasks",
@@ -173,6 +175,7 @@ class Task:
                 one_time = cls.get_details(one_time, speak)
                 if one_time:
                     map(lambda x: print(x), cls.tasks)
+                    Command.initialize_commands()
                     return
             except TimeoutOccurred:
                 continue     
@@ -221,12 +224,6 @@ class Task:
             duration = cls.get_duration()
         print(f"duration set to default: {duration}")
         return duration
-
-    @classmethod
-    def put_letter(cls, l : str):
-        title : str = getActiveWindowTitle()    
-        if title.endswith("focus.exe") or "focus.io" in title:
-            cls.queue.put(l)
 
 def get_terminal_data() -> tuple:
     """The function for pretty printing on terminal"""
