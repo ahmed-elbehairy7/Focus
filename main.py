@@ -3,22 +3,10 @@
 from pyttsx3 import speak
 from traceback import print_exc
 from sys import  exit
-from todos import Todo
 from tasks import Task
-from globals import *
-from argparse import ArgumentParser
 
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
-
-parser = ArgumentParser("Focus", description="Application for productivity and focusing without procrastinating")
-parser.add_argument("-q", "--quite", action="store_true", help="no ai bot speaking")
-
-args = parser.parse_args()
-
-if args.quite:
-    speak = lambda x : ...
-    
 
 def main():
 

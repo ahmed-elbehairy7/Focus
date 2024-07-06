@@ -51,8 +51,7 @@ class Task:
     
     def progressbar(self) -> None:
         sleeping = self.duration * 60 / bar
-        # print(" " * indent, "_" * bar, sep="")
-        # print(" " * (indent - 1), "[", sep="", end="")
+        
         print('\n\n', " " * (indent - 1), "|", sep="", end="")
 
         for _ in range(bar):
@@ -79,7 +78,6 @@ class Task:
             print(Style.RESET_ALL, end='')
 
         print('|\n\n')
-        # print("]\n", " " * indent, "_" * bar, "\n\n", sep="")
 
     
     def __str__(self) -> str:
