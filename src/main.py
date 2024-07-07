@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from pyttsx3 import speak
+speak = lambda _ : _
 from traceback import print_exc
 from sys import  exit
 from tasks import Task
