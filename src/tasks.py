@@ -5,7 +5,7 @@ from shutil import get_terminal_size
 from inputimeout import TimeoutOccurred
 from colorama import Fore, Style, Back
 from globals import *
-from queue import Empty
+from exceptions import SkipTask
 from command import Command
 
 class Task:
@@ -56,22 +56,9 @@ class Task:
 
         for _ in range(bar):
             try:
-                t = Command.queue.get(True, sleeping)
-                match t:
-                    case 'p':
-                        while True:
-                            t = Command.queue.get()
-                            if t == 'r':
-                                sleep(sleeping)
-                                break
-                    case 's':
-                        return
-                    case 'e':
-                        raise SystemExit
-                    case _:
-                        sleep(sleeping)
-            except Empty:
-                pass
+                Command.checkCommand(sleeping)
+            except SkipTask:
+                return
             print(Back.LIGHTWHITE_EX, end='')
             stdout.write(" ")
             stdout.flush()
@@ -81,7 +68,7 @@ class Task:
 
     
     def __str__(self) -> str:
-        return f"name: {self.name}, duration: {self.duration}, msg: {self.msg}, one time: {self.one_time}"
+        return f"{self.name}  {'<>' if self.one_time else ''}"    
 
 
     @classmethod
@@ -89,14 +76,7 @@ class Task:
         #print all tasks
         print(Style.DIM, end='')
         for task in Task.tasks:
-            if task.one_time:
-                name = task.name + "  <>"
-            else:
-                name = task.name
-            if index == task.index:
-                print(Style.NORMAL + Fore.LIGHTBLUE_EX + f"{name}" + Fore.WHITE + Style.DIM)
-                continue
-            print(name)
+            print(Style.NORMAL + Fore.LIGHTBLUE_EX + str(task) + Fore.WHITE + Style.DIM) if index == task.index else print(task)
             
         print(Style.RESET_ALL + '\n')
 
@@ -119,24 +99,6 @@ class Task:
 
         else:
             Task(task_input, cls.get_duration(), one_time)
-
-    @classmethod
-    def save(cls) -> None:
-        with open("tasks.json", "w") as file:
-            dump(
-                list(
-                    map(
-                        lambda task: {
-                            "name": task.name,
-                            "duration": task.duration,
-                            "msg": task.msg,
-                        },
-                        cls.tasks,
-                    )
-                ),
-                file,
-                indent=4,
-            )
 
     @classmethod
     def filter_tasks(cls, one_time: bool = True) -> None:
@@ -235,4 +197,3 @@ def get_terminal_data() -> tuple:
     # Know how much should the progress bar be indented and how many '=' to type
     indent = int(terminal / 25)
     bar = int((terminal / 25) * 23)
-    
