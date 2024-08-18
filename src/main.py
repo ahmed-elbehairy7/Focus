@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 
-speak = lambda _ : _
+from pyttsx3 import speak
 from traceback import print_exc
-from sys import  exit
+from sys import exit
 from tasks import Task
 
 # ----------------MAIN FUNCTION------------------#
 # ----------------MAIN FUNCTION------------------#
 
+
 def main():
 
     # Make the computer say the following
     speak("Welcome to FOCUS.io")
-    
+
     Task.get_tasks(speak)
 
     for task in Task.filtered_tasks(False):
@@ -21,17 +22,18 @@ def main():
 
     # Remove the one time tasks from tasks
     Task.filter_tasks()
-    
+
     if not Task.tasks:
         exit()
-    
+
     # Forever:
     while True:
         # For each task added by the user
         for task in Task.tasks:
             task.exec(speak)
 
-        Task.congrats(speak)                   
+        Task.congrats(speak)
+
 
 if __name__ == "__main__":
     try:
