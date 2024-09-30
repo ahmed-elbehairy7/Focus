@@ -1,1 +1,1 @@
-pyinstaller -F -n focus src/main.py --distpath dev
+pyinstaller -F -n focus src/main.py
